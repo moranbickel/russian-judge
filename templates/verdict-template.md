@@ -77,6 +77,9 @@ VERDICT: REWORK
 
 ## JSON form (for programmatic pipelines)
 
+A formal JSON Schema for the verdict shape lives at [`schemas/verdict.schema.json`](../schemas/verdict.schema.json). Use it to validate verdicts in CI pipelines.
+
+
 ```json
 {
   "round": "R1",

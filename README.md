@@ -22,6 +22,41 @@ That last piece is the one that matters most. The score alone is a vibe. The sco
 
 ---
 
+## What RJ is not
+
+RJ is **not** a claim that LLM reviewers are reliably correct. The reviewer can still miss defects, hallucinate findings, or misclassify severity. Recent research on LLM-as-judge systems documents real failure modes — bias, prompt-injection vulnerability, score drift.
+
+The protocol's value is not oracle-level correctness. Its value is forcing every review into:
+
+1. a severity taxonomy,
+2. a pass/fail contract,
+3. a bounded review loop,
+4. explicit human-operator responsibility.
+
+RJ is a structured adversarial review *loop for human-operated workflows*. The Operator owns the decision to ship; the reviewer owns the structured signal. If you treat the verdict as oracle, you're holding the protocol wrong.
+
+---
+
+## RJ vs alternatives
+
+Three common approaches to AI-assisted review, side by side. Use the one that fits your work product and operating constraints.
+
+| Dimension | Free-form LLM review | Russian Judge | Human review |
+|---|---|---|---|
+| Output shape | Prose, unstructured | Score + C/I/M findings + verdict | Variable, often prose |
+| Pass criterion | Reader's interpretation | `score ≥ 9.0 AND 0 C/I` (contract) | Reviewer judgment |
+| Round protocol | None | R1 → fix → R2 → halt at floor | Variable |
+| Defect prioritization | Mixed in with cosmetic notes | Explicit class on every finding | Implicit |
+| Time per review | Minutes | Minutes | Hours to days |
+| Cost per review | Low | Low | High |
+| Domain capability | Bounded by reviewer model | Bounded by reviewer model | Bounded by reviewer human |
+| Audit trail | None | Verdict format is the record | Variable, often informal |
+| Best for | Quick sanity checks, exploratory work | Pre-merge gate on every change that can introduce a new failure mode | Architecture, judgment calls, regulated-domain decisions |
+
+RJ doesn't replace human review — it makes the cases where humans aren't practical (every commit, late-night, weekends, every paragraph of a draft) reviewed at all, with structured output a human can audit later.
+
+---
+
 ## The protocol, at a glance
 
 ```

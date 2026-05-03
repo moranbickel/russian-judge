@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/moranbickel/russian-judge/blob/master/schemas/verdict.schema.json",
+  "title": "Russian Judge Verdict",
+  "description": "Schema for a Russian Judge verdict produced by an adversarial reviewer. Mirrors the JSON form documented in templates/verdict-template.md and the field rules in PROTOCOL.md §7.",
+  "type": "object",
+  "required": ["round", "modality", "score", "findings", "verdict"],
+  "additionalProperties": false,
+  "properties": {
+    "round": {
+      "type": "string",
+      "pattern": "^R[0-9]+$",
+      "description": "Review round identifier. R1, R2, R3, etc."
+    },
+    "modality": {
+      "type": "string",
+      "enum": ["code", "domain", "dual"],
+      "description": "Review modality. Per PROTOCOL.md §9. Dual indicates two independent verdicts (one Code, one Domain) rolled up; in practice the two are usually emitted as separate verdicts, each with its own modality."
+    },
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "multipleOf": 0.1,
+      "description": "Reviewer score, [0.0, 10.0], one decimal of precision. Anchored bands per PROTOCOL.md §4.1."
+    },
+    "findings": {
+      "type": "object",
+      "required": ["critical", "important", "minor"],
+      "additionalProperties": false,
+      "properties": {
+        "critical": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/findingCI" },
+          "description": "Critical findings. Block shipping unconditionally."
+        },
+        "important": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/findingCI" },
+          "description": "Important findings. Block shipping at the pass floor."
+        },
+        "minor": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/findingM" },
+          "description": "Minor findings. Do not block shipping."
+        }
+      }
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["PASS", "REVISE", "REWORK"],
+      "description": "Computed verdict value. PASS requires score>=9.0 AND 0 critical AND 0 important. REVISE is the default below the floor. REWORK is reserved for score<7.0. Validators should verify the verdict is consistent with the score and finding counts."
+    }
+  },
+  "$defs": {
+    "findingCI": {
+      "type": "object",
+      "required": ["id", "description", "impact"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[CI]-[1-9][0-9]*$",
+          "description": "Finding identifier. Class letter (C or I) + dash + 1-indexed integer, monotonically increasing within the class."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One-sentence description of the defect, ending with a period."
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One-sentence description of the consequence if shipped, ending with a period. Required for Critical and Important."
+        }
+      }
+    },
+    "findingM": {
+      "type": "object",
+      "required": ["id", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^M-[1-9][0-9]*$",
+          "description": "Minor finding identifier. M-1, M-2, etc."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One-sentence description of the defect, ending with a period."
+        },
+        "impact": {
+          "type": "string",
+          "description": "Optional one-sentence consequence statement. Not required for Minor."
+        }
+      }
+    }
+  }
+}
