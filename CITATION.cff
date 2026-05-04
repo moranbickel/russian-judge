@@ -5,6 +5,7 @@ type: software
 authors:
   - family-names: Bickel
     given-names: Moran
+    orcid: "https://orcid.org/0009-0009-4424-5900"
 version: "1.0"
 date-released: "2026-05-03"
 url: "https://github.com/moranbickel/russian-judge"
